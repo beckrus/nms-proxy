@@ -1,5 +1,4 @@
 from fastapi import FastAPI
-import json
 from schemas import RemoteBase, DiscoveryRemotes
 from snmp import get_modem_data, get_modems
 from config import (
@@ -7,7 +6,7 @@ from config import (
     NMS_IP,
     NMS_COMMUNITY
 )
-app = FastAPI()
+app = FastAPI(title="AXESS Proxy")
 
 
 @app.get("/")
