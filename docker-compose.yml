@@ -1,0 +1,10 @@
+version: '3.4'
+services:
+  nms-proxy:
+    container_name: nms-proxy
+    restart: always
+    ports:
+      - 3000:3000
+    build:
+      context: .
+      dockerfile: Dockerfile
