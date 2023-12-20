@@ -4,9 +4,9 @@ services:
     container_name: nms-proxy
     restart: always
     environment:
-      - REGEX_FILTER=^AXESS::.*
+      - REGEX_FILTER=.*AXESSNET.*
       - NMS_COMMUNITY=public
-      - NMS_IP=192.168.0.1
+      - NMS_IP=192.168.231.2
     ports:
       - 3000:3000
     build:

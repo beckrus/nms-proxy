@@ -21,6 +21,7 @@ class RemoteBase(BaseModel):
     upstream_cno: str | None = None
     upstream_tx_power: str | None = None
     uptime: str | None = None
+    geo: str | None = None
 
 
 class DiscoveryBase(BaseModel):

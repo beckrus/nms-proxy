@@ -8,6 +8,7 @@ from pysnmp.hlapi import *
 import re
 from config import NMS_IP, NMS_COMMUNITY, REGEX_FILTER
 from collections import ChainMap
+from fastapi import HTTPException
 
 import logging
 FORMAT = '%(asctime)s :: %(name)s :: %(levelname)s :: %(message)s'
@@ -32,6 +33,9 @@ async def get_modems():
     while (count < MAX_REPS):
         try:
             errorIndication, errorStatus, errorIndex, varBinds = next(iterator)
+            if errorIndication or errorStatus:
+                raise HTTPException(
+                    status_code=503, detail=f"{errorIndication}")
             did, name = varBinds[0].prettyPrint().split(' = ')
             match_re = re.search(f'{REGEX_FILTER}', name)
             if match_re:
@@ -70,26 +74,26 @@ async def get_data(did, oid, key):
 
 async def get_modem_data(did):
     oids = {
-        'name': '1.3.6.1.4.1.13732.1.1.1.1.7',
-        'bits_received': '1.3.6.1.4.1.13732.1.4.2.1.10',
-        'bits_recieved_bcast': '1.3.6.1.4.1.13732.1.4.2.1.7',
-        'bits_sent': '1.3.6.1.4.1.13732.1.4.2.1.14',
-        'cpu_usage': '1.3.6.1.4.1.13732.1.4.3.1.47',
+        'name': '.1.3.6.1.4.1.13732.1.1.1.1.7',
+        'bits_received': '.1.3.6.1.4.1.13732.1.4.2.1.10',
+        'bits_recieved_bcast': '.1.3.6.1.4.1.13732.1.4.2.1.7',
+        'bits_sent': '.1.3.6.1.4.1.13732.1.4.2.1.14',
+        'cpu_usage': '.1.3.6.1.4.1.13732.1.4.3.1.47',
         'crc8errors': '.1.3.6.1.4.1.13732.1.4.3.1.20',
         'crc32errors': '.1.3.6.1.4.1.13732.1.4.3.1.21',
         'downsnr': '.1.3.6.1.4.1.13732.1.4.3.1.2',
         'memory_usage': '.1.3.6.1.4.1.13732.1.4.3.1.48',
         'modcod': '.1.3.6.1.4.1.13732.1.4.9.1.4',
-        'ping': '1.3.6.1.4.1.13732.1.4.5.1.5',
+        'ping': '.1.3.6.1.4.1.13732.1.4.5.1.5',
         'satellite': '.1.3.6.1.4.1.13732.1.4.5.1.6',
         'state': '.1.3.6.1.4.1.13732.1.1.1.1.12',
         'state_01': '.1.3.6.1.4.1.13732.1.1.1.1.15',
-        'temperature': '1.3.6.1.4.1.13732.1.4.3.1.8',
+        'temperature': '.1.3.6.1.4.1.13732.1.4.3.1.8',
         'upstream_cno': '.1.3.6.1.4.1.13732.1.4.4.1.2',
         'upstream_tx_power': '1.3.6.1.4.1.13732.1.4.3.1.3',
         'uptime': '.1.3.6.1.4.1.13732.1.4.3.1.11',
+        'geo': '.1.3.6.1.4.1.13732.1.1.1.1.16',
     }
-    result = {}
     tasks = []
     for key, oid in oids.items():
         tasks.append(create_task(get_data(did, oid, key)))
