@@ -71,7 +71,7 @@ async def get_data(did, oid, key, snmpEngine):
                                  errorIndex and varBinds[int(errorIndex) - 1][0] or '?'))
         return {key: f'{err_msg}'}
     try:
-        return {key: varBinds[0].prettyPrint().split(' = ')[-1]}
+        return {key: varBinds[0].prettyPrint().split(f'{did} = ')[-1]}
     except:
         logger.error(f'{errorIndication}')
         return {key: f'{errorIndication}'}
